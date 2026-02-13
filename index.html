@@ -1,0 +1,158 @@
+<script>
+// Smooth Scroll
+function scrollToPage(id) {
+    document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+}
+
+// Envelope Opening and Typing
+const envelope = document.getElementById("envelope");
+const typedText = document.getElementById("typedText");
+let envelopeOpened = false;
+
+const text = `My dearest Emanuele,
+
+There are things in this world that are hard to say —
+because they are deeply felt.
+
+You are my favorite notification,
+my peace in the chaos of life,
+my laughter in the quiet moments,
+my heart's true home.
+
+Every day with you feels like a new beginning,
+and I can't imagine a future without you by my side.
+You make everything brighter, sweeter, and more beautiful.
+
+Will you be my Valentine?
+Forever and always.
+
+With all my love,
+[Your Name] 💕`;
+
+let i = 0;
+function typeWriter() {
+    if (i < text.length) {
+        typedText.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typeWriter, 50);
+    }
+}
+
+envelope.addEventListener("click", function() {
+    if (!envelopeOpened) {
+        envelope.classList.add("open");
+        setTimeout(() => {
+            typedText.classList.add("revealed");
+            typeWriter();
+        }, 1500);
+        envelopeOpened = true;
+    }
+});
+
+// Button Interactions
+document.getElementById("yesBtn").addEventListener("click", function() {
+    document.getElementById("yesPage").classList.add("active");
+    startValentineEffect();
+    playMusic();
+});
+
+document.getElementById("noBtn").addEventListener("click", function() {
+    const noBtn = document.getElementById("noBtn");
+    noBtn.style.position = "absolute";
+    noBtn.style.left = Math.random() * 80 + "%";
+    noBtn.style.top = Math.random() * 80 + "%";
+});
+
+// Background Music
+function playMusic() {
+    const music = document.getElementById("bgMusic");
+    music.play();
+}
+
+// Valentine Effect: Confetti + Hearts + Petals + Butterflies
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+function createParticles() {
+    const total = 200; // Total particles
+    for (let i = 0; i < total; i++) {
+        const type = Math.random();
+        let particle = {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            r: Math.random() * 6 + 4,
+            tilt: Math.random() * 10 - 10,
+            tiltAngle: 0,
+            tiltAngleIncrement: Math.random() * 0.07 + 0.05,
+            speedY: Math.random() * 3 + 2,
+            speedX: Math.random() * 2 - 1
+        };
+        if (type < 0.3) particle.color = 'hsl(' + Math.random()*360 + ', 100%, 50%)'; // Confetti
+        else if (type < 0.55) particle.color = '#ff69b4'; // Hearts
+        else if (type < 0.8) particle.color = '#ffb6c1'; // Petals
+        else particle.color = '#ffa500'; // Butterflies
+        particle.type = type;
+        particles.push(particle);
+    }
+}
+
+function drawParticles() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach((p, index) => {
+        ctx.beginPath();
+        if(p.type < 0.3){
+            // Confetti line
+            ctx.lineWidth = p.r / 2;
+            ctx.strokeStyle = p.color;
+            ctx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+            ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 4);
+            ctx.stroke();
+        } else if(p.type < 0.55){
+            // Heart
+            ctx.font = p.r*4 + "px serif";
+            ctx.fillStyle = p.color;
+            ctx.fillText("❤️", p.x, p.y);
+        } else if(p.type < 0.8){
+            // Petal
+            ctx.font = p.r*5 + "px serif";
+            ctx.fillStyle = p.color;
+            ctx.fillText("🌸", p.x, p.y);
+        } else {
+            // Butterfly
+            ctx.font = p.r*4 + "px serif";
+            ctx.fillStyle = p.color;
+            ctx.fillText("🦋", p.x, p.y);
+        }
+
+        // Motion
+        p.tiltAngle += p.tiltAngleIncrement;
+        p.x += p.speedX + Math.sin(p.tiltAngle);
+        p.y += p.speedY + Math.cos(p.tiltAngle);
+
+        // Respawn if out of canvas
+        if(p.y > canvas.height + 50 || p.x > canvas.width + 50 || p.x < -50){
+            particles[index] = {
+                ...p,
+                x: Math.random() * canvas.width,
+                y: -10
+            };
+        }
+    });
+    requestAnimationFrame(drawParticles);
+}
+
+function startValentineEffect() {
+    createParticles();
+    drawParticles();
+}
+
+// Resize canvas
+window.addEventListener("resize", function() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
